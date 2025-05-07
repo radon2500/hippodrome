@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss,SSS} %-5level %logger{36}: %msg%n"/>
+        </Console>
+        <RollingFile name="FileAppender"
+                     fileName="${sys:user.dir}/logs/hippodrome.log"
+                     filePattern="${sys:user.dir}/logs/hippodrome.%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss,SSS} %-5level %logger{36}: %msg%n</pattern>
+            </PatternLayout>
+
+            <Policies>
+                <!-- Ротация каждую минуту для теста. В продакшене используйте TimeBasedTriggeringPolicy interval="1" -->
+                <CronTriggeringPolicy schedule="0 0 0 * * ?"/> <!-- Ротация каждый день в полночь -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:user.dir}/logs" maxDepth="1">
+                    <IfFileName glob="hippodrome.*.log" />
+                    <IfLastModified age="7d" />
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="Horse" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+        <Logger name="Hippodrome" level="debug" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="FileAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
